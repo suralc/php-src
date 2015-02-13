@@ -247,7 +247,7 @@ static YYSIZE_T zend_yytnamerr(char*, const char*);
 %type <ast> class_const_list name_list trait_adaptations method_body non_empty_for_exprs
 %type <ast> ctor_arguments alt_if_stmt_without_else trait_adaptation_list lexical_vars
 %type <ast> lexical_var_list encaps_list array_pair_list non_empty_array_pair_list
-%type <ast> assignment_list isset_variable type return_type empty_variables empty_variable
+%type <ast> assignment_list isset_variable type return_type empty_expressions empty_expression
 
 %type <num> returns_ref function is_reference is_variadic variable_modifiers
 %type <num> method_modifiers trait_modifiers non_empty_member_modifiers member_modifier
@@ -1152,7 +1152,7 @@ encaps_var_offset:
 
 internal_functions_in_yacc:
 		T_ISSET '(' isset_variables ')' { $$ = $3; }
-	|	T_EMPTY '(' empty_variables ')' { $$ = $3; }
+	|	T_EMPTY '(' empty_expressions ')' { $$ = $3; }
 	|	T_INCLUDE expr
 			{ $$ = zend_ast_create_ex(ZEND_AST_INCLUDE_OR_EVAL, ZEND_INCLUDE, $2); }
 	|	T_INCLUDE_ONCE expr
@@ -1175,13 +1175,13 @@ isset_variable:
 		expr { $$ = zend_ast_create(ZEND_AST_ISSET, $1); }
 ;
 
-empty_variables:
-		empty_variable { $$ = $1; }
-	|	empty_variables ',' empty_variable
+empty_expressions:
+		empty_expression { $$ = $1; }
+	|	empty_expressions ',' empty_expression
 			{ $$ = zend_ast_create(ZEND_AST_OR, $1, $3); }
 ;
 
-empty_variable:
+empty_expression:
 		expr { $$ = zend_ast_create(ZEND_AST_EMPTY, $1); }
 ;
 
